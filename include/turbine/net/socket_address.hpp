@@ -7,9 +7,11 @@
 
 namespace turbine::net {
 
-  class sockaddr {
+  class socket_address {
   public:
-    sockaddr(::sockaddr const *data, ::socklen_t len) : m_data{}, m_size{len} {
+    socket_address(::sockaddr const *data, ::socklen_t len)
+        : m_data{}
+        , m_size{len} {
       assert(data);
       assert(m_size > 0);
       std::memcpy(&m_data, data, m_size);

@@ -2,7 +2,7 @@
 
 #include <turbine/common/error.hpp>
 #include <turbine/common/flags.hpp>
-#include <turbine/net/sockaddr.hpp>
+#include <turbine/net/socket_address.hpp>
 #include <turbine/posix/fd.hpp>
 
 #include <cassert>
@@ -19,8 +19,6 @@ namespace turbine::net {
   class socket : public posix::fd {
   public:
     using ptr = std::shared_ptr<socket>;
-
-    static constexpr const int default_backlog = 32;
 
     enum class recv_flags : int {
       none = 0,
@@ -45,18 +43,20 @@ namespace turbine::net {
       fast_open = MSG_FASTOPEN,
     };
 
+    static constexpr const int default_backlog = 32;
+
   protected:
-    socket(int filedes, sockaddr const &addr)
+    socket(int filedes, socket_address const &addr)
         : posix::fd{filedes}
         , m_addr{addr} {
     }
 
   public:
-    sockaddr &address() noexcept {
+    socket_address &address() noexcept {
       return m_addr;
     }
 
-    sockaddr const &address() const noexcept {
+    socket_address const &address() const noexcept {
       return m_addr;
     }
 
@@ -86,8 +86,13 @@ namespace turbine::net {
       return send(&out, sizeof out, fl);
     }
 
+    template <class T, class... Args>
+    auto make(Args &&...args) {
+      return std::shared_ptr<T>(new T{std::forward<Args>(args)...});
+    }
+
   private:
-    sockaddr m_addr;
+    socket_address m_addr;
   };
 
   using socket_ptr = socket::ptr;

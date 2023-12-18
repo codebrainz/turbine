@@ -1,25 +1,46 @@
 #pragma once
 
-#include <turbine/net/sockaddr.hpp>
 #include <turbine/net/socket.hpp>
+#include <turbine/net/socket_address.hpp>
+#include <turbine/net/tcp/socket_address.hpp>
 
 #include <memory>
 
-namespace turbine::net {
+namespace turbine::net::tcp {
 
-  class tcp_socket : public socket {
+  class socket : public net::socket {
+    friend class net::socket;
+
   public:
-    using ptr = std::shared_ptr<tcp_socket>;
+    using ptr = std::shared_ptr<tcp::socket>;
 
   protected:
     template <class T>
-    tcp_socket(int filedes, T const &addr)
-        : socket{filedes, sockaddr{reinterpret_cast<::sockaddr const *>(&addr),
-                                   sizeof addr}} {
-      static_assert(sizeof(T) <= sizeof(sockaddr_storage));
+    socket(int filedes, T const &addr)
+        : net::socket{filedes, addr}
+        , m_addr{address()} {
     }
+
+    tcp::socket_address &address() noexcept {
+      return m_addr;
+    }
+
+    tcp::socket_address const &address() const noexcept {
+      return m_addr;
+    }
+
+    std::string ip() const {
+      return m_addr.ip();
+    }
+
+    uint16_t port() const {
+      return m_addr.port();
+    }
+
+  private:
+    tcp::socket_address &m_addr;
   };
 
-  using tcp_socket_ptr = tcp_socket::ptr;
+  using socket_ptr = socket::ptr;
 
-} // namespace turbine::net
+} // namespace turbine::net::tcp

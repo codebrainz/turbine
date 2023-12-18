@@ -10,6 +10,7 @@ headers := \
 	$(wildcard include/turbine/io/*.hpp) \
 	$(wildcard include/turbine/linux/*.hpp) \
 	$(wildcard include/turbine/net/*.hpp) \
+	$(wildcard include/turbine/net/tcp/*.hpp) \
 	$(wildcard include/turbine/posix/*.hpp)
 
 all: turbine
