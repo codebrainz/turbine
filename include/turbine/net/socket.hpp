@@ -8,6 +8,7 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <memory>
 
 #include <netdb.h>
 #include <sys/socket.h>
@@ -17,6 +18,10 @@ namespace turbine::net {
 
   class socket : public posix::fd {
   public:
+    using ptr = std::shared_ptr<socket>;
+
+    static constexpr const int default_backlog = 32;
+
     enum class recv_flags : int {
       none = 0,
       close_on_exec = MSG_CMSG_CLOEXEC,
@@ -84,6 +89,8 @@ namespace turbine::net {
   private:
     sockaddr m_addr;
   };
+
+  using socket_ptr = socket::ptr;
 
 } // namespace turbine::net
 
