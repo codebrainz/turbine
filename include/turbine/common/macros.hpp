@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cassert>
+#include <cstdio>
+#include <cstdlib>
 #include <utility>
 
 #define M_UNUSED(x) ((void)(x))
@@ -21,4 +23,17 @@
 #define M_UNREACHABLE() __assume(false)
 #else
 #define M_UNREACHABLE() assert(false && "unreachable")
+#endif
+
+#if !defined(NDEBUG) || M_RUNTIME_ASSERTS
+#define M_ASSERT(expr)                                                        \
+  do {                                                                        \
+    if (M_UNLIKELY(!(expr))) {                                                \
+      std::fprintf(stderr, "error: %s:%u: assertion `%s' failed\n", __FILE__, \
+                   __LINE__, #expr);                                          \
+      std::abort();                                                           \
+    }                                                                         \
+  } while (0)
+#else
+#define M_ASSSERT(expr)
 #endif
