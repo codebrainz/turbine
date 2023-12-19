@@ -7,7 +7,6 @@ headers := \
 	$(wildcard lib/*.hpp) \
 	$(wildcard include/turbine/*.hpp) \
 	$(wildcard include/turbine/common/*.hpp) \
-	$(wildcard include/turbine/core/*.hpp) \
 	$(wildcard include/turbine/io/*.hpp) \
 	$(wildcard include/turbine/linux/*.hpp) \
 	$(wildcard include/turbine/net/*.hpp) \
