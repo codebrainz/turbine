@@ -20,10 +20,10 @@ all: turbine
 clean:
 	$(RM) turbine
 
-turbine: $(sources) $(headers)
+turbine: include/turbine.hpp $(sources)
 	$(CXX) $(strip $(CXXFLAGS) -o $@ $(sources) $(LDFLAGS))
 
-turbine.hpp: $(sources) $(headers)
+include/turbine.hpp: $(headers)
 	scripts/amalgamate.py > $@
 
 .PHONY: all clean

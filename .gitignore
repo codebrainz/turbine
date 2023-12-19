@@ -1,6 +1,6 @@
 *.[ado]
 *.so
 /turbine
-/turbine.hpp
+/include/turbine.hpp
 /.vscode/*
 !/.vscode/c_cpp_properties.json
