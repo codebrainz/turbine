@@ -24,4 +24,7 @@ clean:
 turbine: $(sources) $(headers)
 	$(CXX) $(strip $(CXXFLAGS) -o $@ $(sources) $(LDFLAGS))
 
+turbine.hpp: $(sources) $(headers)
+	scripts/amalgamate.py > $@
+
 .PHONY: all clean
