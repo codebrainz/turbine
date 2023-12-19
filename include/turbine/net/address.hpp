@@ -12,86 +12,86 @@
 
 namespace turbine::net {
 
-  class socket_address {
+  class address {
   public:
-    socket_address() : m_data{}, m_size{0} {
+    address() : m_data{}, m_size{0} {
     }
 
-    socket_address(socket_address const &addr) : m_data{}, m_size{addr.m_size} {
+    address(address const &addr) : m_data{}, m_size{addr.m_size} {
       data(&addr.m_data, m_size);
     }
 
-    socket_address(net::address_info const &info)
-        : socket_address{info->ai_addr, info->ai_addrlen} {
+    address(net::address_info const &info)
+        : address{info->ai_addr, info->ai_addrlen} {
     }
 
-    socket_address(::addrinfo const &addr_info)
-        : socket_address{addr_info.ai_addr, addr_info.ai_addrlen} {
+    address(::addrinfo const &addr_info)
+        : address{addr_info.ai_addr, addr_info.ai_addrlen} {
     }
 
-    socket_address(void const *data, ::socklen_t len) : m_data{}, m_size{len} {
+    address(void const *data, ::socklen_t len) : m_data{}, m_size{len} {
       assert(data);
       assert(m_size > 0);
       std::memcpy(&m_data, data, m_size);
     }
 
-    socket_address(::sockaddr_storage const &addr) : socket_address{} {
+    address(::sockaddr_storage const &addr) : address{} {
       data(&addr, sizeof(::sockaddr_storage));
     }
 
-    socket_address(::sockaddr const &addr) : socket_address{} {
+    address(::sockaddr const &addr) : address{} {
       data(&addr, sizeof(::sockaddr));
     }
 
-    socket_address(::sockaddr_in const &addr) : socket_address{} {
+    address(::sockaddr_in const &addr) : address{} {
       data(&addr, sizeof(::sockaddr_in));
     }
 
-    socket_address(::sockaddr_in6 const &addr) : socket_address{} {
+    address(::sockaddr_in6 const &addr) : address{} {
       data(&addr, sizeof(::sockaddr_in6));
     }
 
-    socket_address(::sockaddr_un const &addr) : socket_address{} {
+    address(::sockaddr_un const &addr) : address{} {
       data(&addr, sizeof(::sockaddr_un));
     }
 
-    socket_address &operator=(socket_address const &rhs) {
+    address &operator=(address const &rhs) {
       if (&rhs != this)
         data(&rhs.m_data, rhs.m_size);
       return *this;
     }
 
-    socket_address &operator=(net::address_info const &rhs) {
+    address &operator=(net::address_info const &rhs) {
       data(rhs->ai_addr, rhs->ai_addrlen);
       return *this;
     }
 
-    socket_address &operator=(::addrinfo const &rhs) {
+    address &operator=(::addrinfo const &rhs) {
       data(rhs.ai_addr, rhs.ai_addrlen);
       return *this;
     }
 
-    socket_address &operator=(::sockaddr const &rhs) {
+    address &operator=(::sockaddr const &rhs) {
       data(&rhs, sizeof(::sockaddr));
       return *this;
     }
 
-    socket_address &operator=(::sockaddr_in const &rhs) {
+    address &operator=(::sockaddr_in const &rhs) {
       data(&rhs, sizeof(::sockaddr_in));
       return *this;
     }
 
-    socket_address &operator=(::sockaddr_in6 const &rhs) {
+    address &operator=(::sockaddr_in6 const &rhs) {
       data(&rhs, sizeof(::sockaddr_in6));
       return *this;
     }
 
-    socket_address &operator=(::sockaddr_un const &rhs) {
+    address &operator=(::sockaddr_un const &rhs) {
       data(&rhs, sizeof(::sockaddr_un));
       return *this;
     }
 
-    socket_address &operator=(::sockaddr_storage const &rhs) {
+    address &operator=(::sockaddr_storage const &rhs) {
       data(&rhs, sizeof(::sockaddr_storage));
       return *this;
     }

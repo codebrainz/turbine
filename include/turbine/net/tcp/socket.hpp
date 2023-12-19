@@ -1,8 +1,8 @@
 #pragma once
 
+#include <turbine/net/address.hpp>
 #include <turbine/net/address_info.hpp>
 #include <turbine/net/socket.hpp>
-#include <turbine/net/socket_address.hpp>
 
 #include <cstdint>
 #include <memory>
@@ -21,8 +21,7 @@ namespace turbine::net::tcp {
     using ptr = std::shared_ptr<socket>;
 
   protected:
-    socket(int filedes, socket_address const &addr)
-        : net::socket{filedes, addr} {
+    socket(int filedes, net::address const &addr) : net::socket{filedes, addr} {
     }
 
     socket(address_info const &info) : net::socket{info} {

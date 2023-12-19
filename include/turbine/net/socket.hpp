@@ -2,8 +2,8 @@
 
 #include <turbine/common/error.hpp>
 #include <turbine/common/flags.hpp>
+#include <turbine/net/address.hpp>
 #include <turbine/net/address_info.hpp>
-#include <turbine/net/socket_address.hpp>
 #include <turbine/posix/fd.hpp>
 
 #include <cassert>
@@ -47,12 +47,12 @@ namespace turbine::net {
     static constexpr const int default_backlog = SOMAXCONN;
 
   protected:
-    socket(int filedes, socket_address const &addr)
+    socket(int filedes, net::address const &addr)
         : posix::fd{filedes}
         , m_addr{addr} {
     }
 
-    socket(net::address_info const &info) : posix::fd{-1}, m_addr{} {
+    socket(address_info const &info) : posix::fd{-1}, m_addr{} {
       int f = ::socket(info->ai_family, info->ai_socktype, info->ai_protocol);
       if (f < 0)
         throw system_error{};
@@ -61,11 +61,11 @@ namespace turbine::net {
     }
 
   public:
-    socket_address &address() noexcept {
+    net::address &address() noexcept {
       return m_addr;
     }
 
-    socket_address const &address() const noexcept {
+    net::address const &address() const noexcept {
       return m_addr;
     }
 
@@ -111,7 +111,7 @@ namespace turbine::net {
       ::sockaddr_storage addr{};
       ::socklen_t addr_len = sizeof addr;
       if (int f = ::accept(fileno(), (::sockaddr *)&addr, &addr_len); f >= 0) {
-        socket_address a{(::sockaddr const *)&addr, addr_len};
+        net::address a{(::sockaddr const *)&addr, addr_len};
         return make<T>(f, a);
       }
       throw system_error{};
@@ -130,7 +130,7 @@ namespace turbine::net {
     }
 
   private:
-    socket_address m_addr;
+    net::address m_addr;
   };
 
   using socket_ptr = socket::ptr;

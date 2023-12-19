@@ -1,8 +1,8 @@
 #pragma once
 
 #include <turbine/common/error.hpp>
+#include <turbine/net/address.hpp>
 #include <turbine/net/socket.hpp>
-#include <turbine/net/socket_address.hpp>
 
 #include <cstring>
 #include <memory>
@@ -23,8 +23,7 @@ namespace turbine::net::unix {
     using ptr = std::shared_ptr<socket>;
 
   protected:
-    socket(int filedes, socket_address const &addr)
-        : net::socket{filedes, addr} {
+    socket(int filedes, net::address const &addr) : net::socket{filedes, addr} {
     }
 
     socket(std::string const &path) : socket{-1, make_address(path)} {
@@ -47,7 +46,7 @@ namespace turbine::net::unix {
     }
 
   private:
-    static socket_address make_address(std::string const &path) {
+    static net::address make_address(std::string const &path) {
       ::sockaddr_un local;
       local.sun_family = AF_UNIX;
       size_t path_len = path.size();
