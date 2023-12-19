@@ -1,10 +1,16 @@
 #pragma once
 
+#include <turbine/net/address_info.hpp>
 #include <turbine/net/socket.hpp>
 #include <turbine/net/socket_address.hpp>
-#include <turbine/net/tcp/socket_address.hpp>
 
+#include <cstdint>
 #include <memory>
+#include <string>
+
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <sys/socket.h>
 
 namespace turbine::net::tcp {
 
@@ -12,33 +18,51 @@ namespace turbine::net::tcp {
     friend class net::socket;
 
   public:
-    using ptr = std::shared_ptr<tcp::socket>;
+    using ptr = std::shared_ptr<socket>;
 
   protected:
-    template <class T>
-    socket(int filedes, T const &addr)
-        : net::socket{filedes, addr}
-        , m_addr{address()} {
+    socket(int filedes, socket_address const &addr)
+        : net::socket{filedes, addr} {
     }
 
-    tcp::socket_address &address() noexcept {
-      return m_addr;
+    socket(address_info const &info) : net::socket{info} {
     }
 
-    tcp::socket_address const &address() const noexcept {
-      return m_addr;
-    }
-
+  public:
     std::string ip() const {
-      return m_addr.ip();
+      char ip[INET_ADDRSTRLEN + 1] = {0};
+      ::sockaddr_in const &ai = address();
+      inet_ntop(AF_INET, &ai.sin_addr, ip, sizeof ip);
+      return ip;
     }
 
     uint16_t port() const {
-      return m_addr.port();
+      ::sockaddr_in const &ai = address();
+      return ntohs(ai.sin_port);
     }
 
-  private:
-    tcp::socket_address &m_addr;
+    template <class T, class... Args>
+    auto make(Args &&...args) {
+      static_assert(std::is_base_of_v<tcp::socket, T>);
+      return std::shared_ptr<T>(new T{std::forward<Args>(args)...});
+    }
+
+  protected:
+    auto bind() {
+      return net::socket::bind();
+    }
+
+    auto listen(int backlog = default_backlog) {
+      return net::socket::listen(backlog);
+    }
+
+    auto accept() {
+      return net::socket::accept<socket>();
+    }
+
+    auto connect() {
+      return net::socket::connect();
+    }
   };
 
   using socket_ptr = socket::ptr;

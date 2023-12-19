@@ -11,6 +11,8 @@ headers := \
 	$(wildcard include/turbine/linux/*.hpp) \
 	$(wildcard include/turbine/net/*.hpp) \
 	$(wildcard include/turbine/net/tcp/*.hpp) \
+	$(wildcard include/turbine/net/udp/*.hpp) \
+	$(wildcard include/turbine/net/unix/*.hpp) \
 	$(wildcard include/turbine/posix/*.hpp)
 
 all: turbine

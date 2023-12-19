@@ -2,6 +2,7 @@
 
 #include <turbine/common/error.hpp>
 #include <turbine/common/flags.hpp>
+#include <turbine/net/address_info.hpp>
 #include <turbine/net/socket_address.hpp>
 #include <turbine/posix/fd.hpp>
 
@@ -43,12 +44,20 @@ namespace turbine::net {
       fast_open = MSG_FASTOPEN,
     };
 
-    static constexpr const int default_backlog = 32;
+    static constexpr const int default_backlog = SOMAXCONN;
 
   protected:
     socket(int filedes, socket_address const &addr)
         : posix::fd{filedes}
         , m_addr{addr} {
+    }
+
+    socket(net::address_info const &info) : posix::fd{-1}, m_addr{} {
+      int f = ::socket(info->ai_family, info->ai_socktype, info->ai_protocol);
+      if (f < 0)
+        throw system_error{};
+      fileno(f);
+      m_addr.data(info->ai_addr, info->ai_addrlen);
     }
 
   public:
@@ -86,8 +95,37 @@ namespace turbine::net {
       return send(&out, sizeof out, fl);
     }
 
+    void bind() {
+      auto const &na = address();
+      if (::bind(fileno(), na.data(), na.size()) != 0)
+        throw system_error{};
+    }
+
+    void listen(int backlog = default_backlog) {
+      if (::listen(fileno(), backlog) != 0)
+        throw system_error{};
+    }
+
+    template <class T>
+    auto accept() {
+      ::sockaddr_storage addr{};
+      ::socklen_t addr_len = sizeof addr;
+      if (int f = ::accept(fileno(), (::sockaddr *)&addr, &addr_len); f >= 0) {
+        socket_address a{(::sockaddr const *)&addr, addr_len};
+        return make<T>(f, a);
+      }
+      throw system_error{};
+    }
+
+    void connect() {
+      auto const &na = address();
+      if (::connect(fileno(), na.data(), na.size()) != 0)
+        throw system_error{};
+    }
+
     template <class T, class... Args>
     auto make(Args &&...args) {
+      static_assert(std::is_base_of_v<socket, T>);
       return std::shared_ptr<T>(new T{std::forward<Args>(args)...});
     }
 
