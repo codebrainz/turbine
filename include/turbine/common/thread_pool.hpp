@@ -14,7 +14,6 @@
 namespace turbine::common {
 
   class thread_pool {
-    static constexpr uint32_t thread_multiplier = 1;
 
   public:
     using task_func = std::function<void(void)>;
@@ -26,7 +25,7 @@ namespace turbine::common {
         , m_cond{}
         , m_stop{false} {
       if (n_threads == 0)
-        n_threads = std::thread::hardware_concurrency() * thread_multiplier;
+        n_threads = std::thread::hardware_concurrency();
       m_threads.reserve(n_threads);
       for (uint32_t i = 0; i < n_threads; ++i)
         m_threads.emplace_back(std::bind(&thread_pool::thread_func, this));

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <turbine/common/thread_pool.hpp>
 #include <turbine/core/blade.hpp>
 
 #include <algorithm>
@@ -10,12 +11,13 @@ namespace turbine::core {
 
   class rotor {
   public:
-    rotor() : m_blades{} {
+    rotor()
+        : m_thread_pool{std::thread::hardware_concurrency() * 4}
+        , m_blades{} {
       const auto n_cores = std::thread::hardware_concurrency();
       m_blades.reserve(n_cores);
       for (auto i = 0u; i < n_cores; ++i)
         m_blades.emplace_back(blade::make(*this));
-      m_blades.shrink_to_fit();
       std::printf("rotor::rotor()\n");
     }
 
@@ -32,6 +34,10 @@ namespace turbine::core {
       return *this;
     }
 
+    common::thread_pool &thread_pool() {
+      return m_thread_pool;
+    }
+
     blade_list &blades() noexcept {
       return m_blades;
     }
@@ -41,6 +47,7 @@ namespace turbine::core {
     }
 
   private:
+    common::thread_pool m_thread_pool;
     blade_list m_blades;
 
     rotor(rotor const &) = delete;

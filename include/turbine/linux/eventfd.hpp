@@ -7,6 +7,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <memory>
 
 #include <sys/eventfd.h>
 
@@ -16,6 +17,8 @@ namespace turbine::linux {
 
   class eventfd : public posix::fd {
   public:
+    using ptr = std::shared_ptr<eventfd>;
+
     enum class flags : int {
       none = 0,
       close_on_exec = EFD_CLOEXEC,
@@ -48,6 +51,8 @@ namespace turbine::linux {
       return fd::make<eventfd>(std::forward<Args>(args)...);
     }
   };
+
+  using eventfd_ptr = eventfd::ptr;
 
 } // namespace turbine::linux
 
