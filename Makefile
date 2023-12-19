@@ -1,29 +1,19 @@
 CXXFLAGS := -Iinclude -D_DEFAULT_SOURCE -std=gnu++20 -Wall -Wextra -Werror
 LDFLAGS :=
 
-sources := $(wildcard src/*.cpp) $(wildcard lib/*.cpp)
-headers := \
-	$(wildcard src/*.hpp) \
-	$(wildcard lib/*.hpp) \
-	$(wildcard include/turbine/*.hpp) \
-	$(wildcard include/turbine/common/*.hpp) \
-	$(wildcard include/turbine/io/*.hpp) \
-	$(wildcard include/turbine/linux/*.hpp) \
-	$(wildcard include/turbine/net/*.hpp) \
-	$(wildcard include/turbine/net/tcp/*.hpp) \
-	$(wildcard include/turbine/net/udp/*.hpp) \
-	$(wildcard include/turbine/net/unix/*.hpp) \
-	$(wildcard include/turbine/posix/*.hpp)
+sources := $(wildcard src/*.cpp)
+headers := $(wildcard src/*.hpp)
+lib_headers := $(wildcard include/turbine/**/*.hpp)
 
 all: turbine
 
 clean:
-	$(RM) turbine
+	$(RM) include/turbine.hpp turbine
 
-turbine: include/turbine.hpp $(sources)
+turbine: include/turbine.hpp $(sources) $(headers)
 	$(CXX) $(strip $(CXXFLAGS) -o $@ $(sources) $(LDFLAGS))
 
-include/turbine.hpp: $(headers)
+include/turbine.hpp: $(lib_headers)
 	scripts/amalgamate.py > $@
 
 .PHONY: all clean
