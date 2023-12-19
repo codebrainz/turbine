@@ -150,13 +150,20 @@ def generate_code(headers_ordered, c_includes, cxx_includes):
     def put(x):
         output.write(x)
 
-    put("//\n")
-    put("// This file is auto-generated, do not edit.\n")
-    put("//\n")
-    put("// To use it, include it in your project and compile with at least the\n")
-    put("// flags '-D_DEFAULT_SOURCE' and '-std=gnu++20'.\n")
-    put("//\n")
-    put("#pragma once\n")
+    put("/*\n")
+    put(" * This file is auto-generated, do not edit directly!\n")
+    put(" *\n")
+    with open(os.path.join(ROOT_PATH, "LICENSE")) as f:
+        for line in f.readlines():
+            line = line.strip()
+            if not line:
+                put(" *\n")
+            else:
+                put(f" * {line}\n")
+    put(" */\n")
+    put("\n")
+    put("#ifndef TURBINE_HEADER_\n")
+    put("#define TURBINE_HEADER_\n")
     put("\n")
 
     def put_include(include):
@@ -194,6 +201,8 @@ def generate_code(headers_ordered, c_includes, cxx_includes):
             put(f"// {header.filename}\n")
             put(contents)
             put("\n\n")
+
+    put("#endif // TURBINE_HEADER_\n")
 
     return output.getvalue().rstrip() + "\n"
 
