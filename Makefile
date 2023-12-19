@@ -13,7 +13,7 @@ clean:
 turbine: include/turbine.hpp $(sources) $(headers)
 	$(CXX) $(strip $(CXXFLAGS) -o $@ $(sources) $(LDFLAGS))
 
-include/turbine.hpp: $(lib_headers)
+include/turbine.hpp: scripts/amalgamate.py $(lib_headers)
 	scripts/amalgamate.py > $@
 
 .PHONY: all clean

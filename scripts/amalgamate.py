@@ -150,7 +150,12 @@ def generate_code(headers_ordered, c_includes, cxx_includes):
     def put(x):
         output.write(x)
 
+    put("//\n")
     put("// This file is auto-generated, do not edit.\n")
+    put("//\n")
+    put("// To use it, include it in your project and compile with at least the\n")
+    put("// flags '-D_DEFAULT_SOURCE' and '-std=gnu++20'.\n")
+    put("//\n")
     put("#pragma once\n")
     put("\n")
 
